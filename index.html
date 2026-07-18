@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>High Pitch · Tatsiana Zhukavets</title>
+<style>
+  /* ===== IMPERIAL WHITE GOLD (default) ===== */
+  :root{
+    --bg:#f4ecdb; --paper:#fffdf8; --paper-2:#fbf5e8;
+    --ink:#3a2f1a; --ink-soft:#6b5c3e; --muted:#9c8c6a;
+    --gold:#b8912f; --gold-deep:#8a6a24; --champagne:#e6cf8f; --pale:#f3e8c8; --hi:#fff8e6;
+    --line:rgba(184,145,47,.26); --line-soft:rgba(184,145,47,.14);
+    --card-shadow:0 24px 60px -34px rgba(138,106,36,.55);
+    --glow:radial-gradient(1200px 640px at 12% -10%, rgba(230,207,143,.55), transparent 60%),
+           radial-gradient(1000px 560px at 100% 0%, rgba(255,248,230,.6), transparent 55%),
+           radial-gradient(900px 700px at 50% 120%, rgba(217,196,138,.35), transparent 60%);
+    --shine:linear-gradient(100deg,#5f470c 0%,#9c6b10 22%,#c99a34 42%,#e6cf7a 50%,#c99a34 58%,#9c6b10 78%,#5f470c 100%);
+  }
+  /* ===== TWILIGHT INDIGO (toggle) ===== */
+  body.dark{
+    --bg:#181633; --paper:#2a2658; --paper-2:#221e48;
+    --ink:#ece9ff; --ink-soft:#c9c3ec; --muted:#948dbb;
+    --gold:#f5c15c; --gold-deep:#c9922c; --champagne:#ffd98a; --pale:#3a2c55; --hi:#fff3d6;
+    --line:rgba(245,193,92,.22); --line-soft:rgba(167,139,250,.22);
+    --card-shadow:0 24px 60px -34px rgba(0,0,0,.7);
+    --glow:radial-gradient(1200px 640px at 12% -10%, rgba(124,58,237,.28), transparent 60%),
+           radial-gradient(1000px 560px at 100% 0%, rgba(70,110,255,.14), transparent 55%);
+    --shine:linear-gradient(100deg,#c9922c,#f5c15c,#fff3d6,#ffe9b0,#f5c15c,#c9922c);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth; -webkit-text-size-adjust:100%}
+  body{margin:0; background:var(--glow), var(--bg); color:var(--ink); overflow-x:hidden;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    line-height:1.62; -webkit-font-smoothing:antialiased; transition:background .5s,color .5s}
+  ::selection{background:rgba(184,145,47,.25)}
+  #starfield{position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:0; transition:opacity .5s}
+  body.dark #starfield{opacity:1}
+
+  #bar-wrap{position:sticky; top:0; z-index:30; height:3px; background:rgba(140,120,70,.16)}
+  #bar{height:100%; width:0; background:var(--shine); background-size:200% auto; animation:shine 5s linear infinite}
+  #controls{position:fixed; top:max(12px,env(safe-area-inset-top)); right:14px; z-index:40; display:flex; gap:6px}
+  .langbtn,#theme-btn{font:inherit; font-weight:600; cursor:pointer; border-radius:999px; color:var(--ink-soft)}
+  #controls .grp{display:flex; gap:2px; background:var(--paper); border:1px solid var(--line);
+    border-radius:999px; padding:3px; box-shadow:var(--card-shadow); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px)}
+  .langbtn{border:none; background:none; font-size:.74rem; letter-spacing:.03em; padding:6px 12px}
+  .langbtn.active{background:var(--shine); background-size:200% auto; color:#2a2008; animation:shine 5s linear infinite}
+  #theme-btn{width:36px; height:36px; font-size:1rem; line-height:1; color:var(--ink);
+    background:var(--paper); border:1px solid var(--line); box-shadow:var(--card-shadow); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px)}
+
+  @keyframes shine{to{background-position:200% center}}
+  @media (prefers-reduced-motion: reduce){*{animation:none!important}}
+
+  .wrap{max-width:820px; margin:0 auto; padding:56px 22px 120px}
+
+  header.hero{text-align:center; margin-bottom:12px}
+  .kicker{display:inline-block; font-size:.7rem; letter-spacing:.34em; text-transform:uppercase; color:var(--gold-deep);
+    padding:7px 18px; border:1px solid var(--line); border-radius:999px; margin-bottom:24px; background:var(--paper)}
+  h1{font-family:Georgia,"Times New Roman",serif; font-weight:600; font-size:clamp(2.4rem,8vw,4.4rem);
+    margin:.05em 0 .28em; letter-spacing:.005em; line-height:1.04}
+  .shimmer{background:var(--shine); background-size:200% auto; -webkit-background-clip:text; background-clip:text;
+    color:transparent; animation:shine 6s linear infinite}
+  .sub{color:var(--ink-soft); font-size:1.06rem; max-width:52ch; margin:0 auto}
+  .tagline{font-family:Georgia,"Times New Roman",serif; font-weight:500; font-size:clamp(1.3rem,4vw,2rem);
+    color:var(--gold-deep); letter-spacing:.01em; line-height:1.15; margin:.12em 0 .55em}
+  .features{display:flex; flex-wrap:wrap; justify-content:center; gap:9px; margin-top:22px}
+  .feat{font-size:.72rem; letter-spacing:.09em; text-transform:uppercase; font-weight:600; color:var(--gold-deep);
+    background:var(--paper); border:1px solid var(--line); border-radius:999px; padding:8px 15px}
+
+  .rule{height:1px; margin:44px auto; max-width:120px; background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+
+  section{margin-top:14px}
+  .eyebrow{font-size:.68rem; letter-spacing:.22em; text-transform:uppercase; color:var(--gold-deep); text-align:center; margin-bottom:6px}
+  h2{font-family:Georgia,serif; font-weight:600; font-size:clamp(1.7rem,5vw,2.4rem); text-align:center; margin:.1em 0 .5em}
+  .lead{text-align:center; color:var(--ink-soft); max-width:56ch; margin:0 auto 30px}
+
+  .card{position:relative; background:linear-gradient(180deg,var(--paper),var(--paper-2));
+    border:1px solid var(--line-soft); border-radius:20px; padding:30px 28px; margin:22px 0;
+    box-shadow:var(--card-shadow); overflow:hidden}
+  .card::before{content:""; position:absolute; inset:0 0 auto 0; height:2px; background:var(--shine); background-size:200% auto;
+    opacity:.75; animation:shine 6s linear infinite}
+  .badge{display:inline-flex; align-items:center; gap:8px; font-size:.72rem; font-weight:700; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--gold-deep); margin-bottom:12px}
+  .badge .dot{width:7px; height:7px; border-radius:999px; background:var(--gold); flex:none}
+  .where{font-size:.82rem; color:var(--muted); margin:2px 0 18px}
+  .pitch{font-family:Georgia,serif; font-size:1.18rem; line-height:1.6; color:var(--ink)}
+  .pitch p{margin:0 0 .7em}
+  .pitch p:last-child{margin-bottom:0}
+  .pitch em{color:var(--muted); font-style:italic; font-size:.9em}
+  .hl{background:linear-gradient(180deg,transparent 62%, var(--pale) 62%); padding:0 2px; font-weight:600}
+
+  .step{display:flex; gap:16px; padding:18px 0; border-bottom:1px solid var(--line-soft)}
+  .step:last-child{border-bottom:none}
+  .snum{flex:none; width:42px; height:42px; border-radius:12px; display:grid; place-items:center;
+    font-family:Georgia,serif; font-weight:700; font-size:1.1rem; color:#2a2008;
+    background:var(--shine); background-size:200% auto; animation:shine 6s linear infinite; box-shadow:0 8px 20px -8px rgba(138,106,36,.6)}
+  .step h4{margin:.15em 0 .3em; font-size:1.05rem}
+  .step p{margin:0; color:var(--ink-soft); font-size:.96rem}
+
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:8px}
+  .ex{background:var(--paper); border:1px solid var(--line-soft); border-radius:14px; padding:16px 18px}
+  .ex .mins{font-size:.7rem; color:var(--gold-deep); font-weight:700; letter-spacing:.05em; text-transform:uppercase}
+  .ex .t{font-weight:700; font-size:.98rem; margin:4px 0; color:var(--ink)}
+  .ex .d{font-size:.9rem; color:var(--ink-soft)}
+
+  .check{background:linear-gradient(180deg,var(--paper),var(--paper-2)); border:1px solid var(--line);
+    border-radius:18px; padding:24px 26px; margin-top:22px; box-shadow:var(--card-shadow)}
+  .check ul{list-style:none; margin:0; padding:0; display:grid; gap:10px}
+  .check li{display:flex; align-items:center; gap:12px; font-size:1rem}
+  .check li .box{flex:none; width:22px; height:22px; border-radius:6px; border:1.5px solid var(--gold); color:var(--gold-deep);
+    display:grid; place-items:center; font-size:.8rem}
+
+  .twrap{overflow-x:auto; -webkit-overflow-scrolling:touch}
+  table{width:100%; border-collapse:collapse; margin-top:10px; font-size:.95rem}
+  th,td{text-align:left; padding:12px 14px; border-bottom:1px solid var(--line-soft); vertical-align:top}
+  th{font-size:.68rem; letter-spacing:.12em; text-transform:uppercase; color:var(--gold-deep)}
+  td:first-child{font-weight:600; white-space:nowrap; color:var(--ink)}
+  td:last-child{color:var(--ink-soft)}
+
+  .note{text-align:center; color:var(--muted); font-size:.82rem; margin-top:36px; font-style:italic}
+  footer{text-align:center; color:var(--muted); font-size:.78rem; margin-top:20px}
+  footer b{color:var(--gold-deep); letter-spacing:.06em}
+
+  #totop{position:fixed; right:16px; bottom:max(16px,env(safe-area-inset-bottom)); z-index:40; width:46px; height:46px; border-radius:999px;
+    border:none; cursor:pointer; color:#2a2008; background:var(--shine); background-size:200% auto; animation:shine 6s linear infinite;
+    font-size:1.2rem; display:none; place-items:center; box-shadow:0 12px 28px -10px rgba(138,106,36,.6)}
+  #totop.show{display:grid}
+
+  @media(max-width:600px){
+    .wrap{padding:52px 16px 120px}
+    .grid{grid-template-columns:1fr}
+    .card{padding:22px 18px}
+    .pitch{font-size:1.1rem}
+    .step{gap:13px}
+    .snum{width:38px; height:38px; font-size:1rem}
+  }
+</style>
+</head>
+<body>
+<canvas id="starfield" aria-hidden="true"></canvas>
+<div id="bar-wrap"><div id="bar"></div></div>
+<div id="controls">
+  <div class="grp">
+    <button class="langbtn active" data-l="ru">RU</button>
+    <button class="langbtn" data-l="en">EN</button>
+    <button class="langbtn" data-l="pl">PL</button>
+  </div>
+  <button id="theme-btn" title="Тёмная тема">🌙</button>
+</div>
+
+<div class="wrap">
+  <header class="hero">
+    <span class="kicker">High Pitch</span>
+    <h1 class="shimmer">Tatsiana Zhukavets</h1>
+    <p class="tagline" data-i="tagline"></p>
+    <p class="sub" data-i="sub"></p>
+    <div class="features">
+      <span class="feat" data-i="f1"></span>
+      <span class="feat" data-i="f2"></span>
+      <span class="feat" data-i="f3"></span>
+      <span class="feat" data-i="f4"></span>
+    </div>
+  </header>
+
+  <div class="rule"></div>
+
+  <section>
+    <div class="eyebrow" data-i="p_eyebrow"></div>
+    <h2 class="shimmer" data-i="p_h2"></h2>
+    <p class="lead" data-i="p_lead"></p>
+
+    <div class="card">
+      <div class="badge"><span class="dot"></span><span data-i="p1_badge"></span></div>
+      <div class="where" data-i="p1_where"></div>
+      <div class="pitch" data-i="p1"></div>
+    </div>
+    <div class="card">
+      <div class="badge"><span class="dot"></span><span data-i="p2_badge"></span></div>
+      <div class="where" data-i="p2_where"></div>
+      <div class="pitch" data-i="p2"></div>
+    </div>
+    <div class="card">
+      <div class="badge"><span class="dot"></span><span data-i="p3_badge"></span></div>
+      <div class="where" data-i="p3_where"></div>
+      <div class="pitch" data-i="p3"></div>
+    </div>
+  </section>
+
+  <div class="rule"></div>
+
+  <section>
+    <div class="eyebrow" data-i="l_eyebrow"></div>
+    <h2 class="shimmer" data-i="l_h2"></h2>
+    <p class="lead" data-i="l_lead"></p>
+    <div class="step"><div class="snum">1</div><div><h4 data-i="l1t"></h4><p data-i="l1d"></p></div></div>
+    <div class="step"><div class="snum">2</div><div><h4 data-i="l2t"></h4><p data-i="l2d"></p></div></div>
+    <div class="step"><div class="snum">3</div><div><h4 data-i="l3t"></h4><p data-i="l3d"></p></div></div>
+    <div class="step"><div class="snum">4</div><div><h4 data-i="l4t"></h4><p data-i="l4d"></p></div></div>
+    <div class="step"><div class="snum">5</div><div><h4 data-i="l5t"></h4><p data-i="l5d"></p></div></div>
+    <div class="step"><div class="snum">6</div><div><h4 data-i="l6t"></h4><p data-i="l6d"></p></div></div>
+  </section>
+
+  <section>
+    <div class="eyebrow" data-i="e_eyebrow"></div>
+    <h2 class="shimmer" data-i="e_h2"></h2>
+    <div class="grid">
+      <div class="ex"><div class="mins" data-i="e1m"></div><div class="t" data-i="e1t"></div><div class="d" data-i="e1d"></div></div>
+      <div class="ex"><div class="mins" data-i="e2m"></div><div class="t" data-i="e2t"></div><div class="d" data-i="e2d"></div></div>
+      <div class="ex"><div class="mins" data-i="e3m"></div><div class="t" data-i="e3t"></div><div class="d" data-i="e3d"></div></div>
+      <div class="ex"><div class="mins" data-i="e4m"></div><div class="t" data-i="e4t"></div><div class="d" data-i="e4d"></div></div>
+      <div class="ex"><div class="mins" data-i="e5m"></div><div class="t" data-i="e5t"></div><div class="d" data-i="e5d"></div></div>
+      <div class="ex"><div class="mins" data-i="e6m"></div><div class="t" data-i="e6t"></div><div class="d" data-i="e6d"></div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow" data-i="c_eyebrow"></div>
+    <h2 class="shimmer" data-i="c_h2"></h2>
+    <div class="check"><ul>
+      <li><span class="box">✓</span><span data-i="c1"></span></li>
+      <li><span class="box">✓</span><span data-i="c2"></span></li>
+      <li><span class="box">✓</span><span data-i="c3"></span></li>
+      <li><span class="box">✓</span><span data-i="c4"></span></li>
+      <li><span class="box">✓</span><span data-i="c5"></span></li>
+    </ul></div>
+  </section>
+
+  <section>
+    <div class="eyebrow" data-i="x_eyebrow"></div>
+    <h2 class="shimmer" data-i="x_h2"></h2>
+    <p class="lead" data-i="x_lead"></p>
+    <div class="twrap"><table>
+      <tr><th data-i="x_th1"></th><th data-i="x_th2"></th></tr>
+      <tr><td data-i="x_r1a"></td><td data-i="x_r1b"></td></tr>
+      <tr><td data-i="x_r2a"></td><td data-i="x_r2b"></td></tr>
+      <tr><td data-i="x_r3a"></td><td data-i="x_r3b"></td></tr>
+      <tr><td data-i="x_r4a"></td><td data-i="x_r4b"></td></tr>
+    </table></div>
+  </section>
+
+  <p class="note" data-i="note"></p>
+  <footer><b>TATSIANA ZHUKAVETS</b> · High Pitch · Portfolio · CV · LinkedIn</footer>
+</div>
+
+<button id="totop" title="↑">↑</button>
+
+<script>
+var T = {
+ ru:{
+  h1:"Твой рассказ о себе",
+  tagline:"Рассказ о себе — вслух",
+  sub:"Питч — это короткий разговор о себе. Здесь готовый текст в трёх длинах плюс упражнения, подсказки и инструкции, чтобы произносить его уверенно и звучать дорого.",
+  f1:"3 длины", f2:"Упражнения", f3:"Подсказки", f4:"Инструкции",
+  p_eyebrow:"Три длины · одна история", p_h2:"Питчи",
+  p_lead:"Каркас каждого: Крючок → Кто я → Доказательства → Чего хочу → Закрытие. Выбирай длину под ситуацию.",
+  p1_badge:"10 секунд · одна фраза", p1_where:"Нетворкинг, знакомство, «чем занимаетесь?»",
+  p1:"<p>Я Татьяна — Product Owner и проектный менеджер, строю продукты с помощью AI. У меня был свой бизнес с <span class='hl'>командой из 17 человек</span>, а сегодня я запускаю три собственных продукта.</p>",
+  p2_badge:"30–60 секунд · лифтовый питч", p2_where:"Собеседование, знакомство с клиентом, видео-интро",
+  p2:"<p>Я Татьяна Жуковец. Я создаю продукты как основатель — держу видение, веду процесс и ставлю AI в работу.</p><p>Начинала со своего образовательного бизнеса в Беларуси: с нуля до <span class='hl'>2 500 учеников</span>, восемь направлений и <span class='hl'>команда из 17</span> — провела его через COVID и передала партнёру без потерь.</p><p>Потом собрала всё заново после переезда в Польшу: 50+ сертификатов — и сразу в разработку трёх продуктов: AI-платформа консультаций, живая академия языков на 360 уроков и приложение для домашней аптечки, где AI моя рабочая команда.</p><p>Ищу место, где встречаются продуктовое владение, люди и рычаг AI. Давайте пообщаемся.</p>",
+  p3_badge:"2–3 минуты · полный High Pitch", p3_where:"«Расскажите о себе» на собеседовании, глубокое знакомство, презентация",
+  p3:"<p><em>(тепло, не спеша)</em></p><p>Три года назад я учила польский за кофемашиной. Сегодня я строю три продукта, где AI — моя команда. Давайте соединю эти две точки.</p><p>Я Татьяна. По сути я основатель и проектный менеджер — создаю продукты через людей, дисциплину процессов и AI-инструменты.</p><p>Моя основа — реальный бизнес. В Беларуси я с нуля построила свой образовательный центр: восемь направлений, <span class='hl'>команда из 17 человек</span>, больше <span class='hl'>2 500 учеников</span>, удержание 40–60%. Провела его через COVID и закрыла эту главу правильно — структурированной передачей партнёру при эмиграции.</p><p>Потом Польша. Я начала заново — новый язык, новый рынок — и серьёзно переучилась: 50+ сертификатов, от Google Project Management до серии курсов по AI. И из учёбы сразу пошла строить.</p><p>Сегодня у меня три продукта, все идут к запуску. AI-платформа консультаций, где я владею продуктом и его мультиязычной системой контента. Онлайн-академия языков — полный цикл, 360 уроков, уже работает, собрана через AI-пайплайн с трёхступенчатым контролем качества. И приложение для домашней аптечки с исследованием по трём рынкам.</p><p>AI для меня не модное слово — это ежедневная рабочая среда. Claude Code и Codex каждый день, четыре своих плагина, тестирование промптов, red-team проверки. AI берёт объём — решение остаётся за мной.</p><p>Что меня отличает — сочетание: чутьё основателя, структура проектного менеджера и настоящая свобода в AI, скреплённые теплом к людям.</p><p>Ищу [продуктовую роль, где отвечаю за результат / клиентов, которым помогу рассказать их историю]. Если это про вас — давайте пообщаемся.</p>",
+  l_eyebrow:"Без стресса · за 3 дня по 10 минут", l_h2:"Как выучить",
+  l_lead:"Главное правило: не зубри целиком. Учи по кусочкам и тренируй вслух — так текст становится своим, и ты не собьёшься.",
+  l1t:"Пойми 5 кубиков", l1d:"Питч = Крючок → Кто я → Доказательства → Чего хочу → Закрытие. Запомни порядок кубиков, а не текст — тогда никогда не потеряешься.",
+  l2t:"Прочитай вслух 3 раза", l2d:"Пока не заучивая — просто спокойно вслух. Пусть слова «обкатаются» и станут твоими.",
+  l3t:"Учи по одному кубику", l3d:"Сначала Крючок — так, чтобы говорить не глядя. Потом добавь второй, затем третий. Как снежный ком.",
+  l4t:"Зеркало · 3 прогона", l4d:"Смотри себе в глаза. Улыбнись на первой и последней фразе — тепло слышно в голосе.",
+  l5t:"Запиши на телефон", l5d:"Первый дубль сними на видео и пересмотри. Непривычно — но именно так уходит зажатость. 2–3 записи, и голос увереннее.",
+  l6t:"Прогон на время", l6d:"С таймером: 10 сек / 60 сек / 2–3 мин. Попадаешь спокойно в тайминг → готово.",
+  e_eyebrow:"По 2 минуты · разомнись", e_h2:"Упражнения",
+  e1m:"2 мин", e1t:"10 крючков", e1d:"Скажи первую фразу 10 раз с разной интонацией. Найди свою — живую, не «дикторскую».",
+  e2m:"2 мин", e2t:"Пауза-драйв", e2d:"На паузах молча считай «раз-два». Паузы = уверенность, а не провал.",
+  e3m:"1 мин", e3t:"Только цифры", e3d:"Проговори вслух лишь цифры: 2 500 · 17 · 360 · 50+. Медленно и весомо — это твоя сила.",
+  e4m:"1 мин", e4t:"Улыбка на старте", e4d:"Начинай с лёгкой улыбки. Голос сразу теплее — а тепло это твой бренд.",
+  e5m:"3 мин", e5t:"Живой слушатель", e5d:"Расскажи другу или родному, а не стене. Живой человек = репетиция «боя».",
+  e6m:"1 мин", e6t:"Свой «ask»", e6d:"Отработай последнюю фразу под ситуацию (см. таблицу). Меняется только она.",
+  c_eyebrow:"За минуту до важного момента", c_h2:"Чек-лист",
+  c1:"Помню 5 кубиков по порядку", c2:"Крючок — от зубов", c3:"Знаю свой «ask» под эту ситуацию", c4:"Дышу ровно, никуда не спешу", c5:"Улыбка + контакт глаз на старте и в конце",
+  x_eyebrow:"Меняется только «Чего хочу»", x_h2:"Под контекст",
+  x_lead:"Весь питч — один и тот же. Подстраивай только последнюю фразу-просьбу.",
+  x_th1:"Ситуация", x_th2:"Фраза-ask",
+  x_r1a:"Собеседование", x_r1b:"«…ищу продуктовую роль, где могу владеть результатом.»",
+  x_r2a:"Клиент услуги", x_r2b:"«…помогаю людям и бизнесам рассказать свою историю так, чтобы она продавала. Давайте обсудим.»",
+  x_r3a:"Нетворкинг", x_r3b:"«…рада знакомству — если интересы пересекаются, давайте на связи.»",
+  x_r4a:"Инвестор / партнёр", x_r4b:"«…ищу партнёров, чтобы довести эти продукты до рынка.»",
+  note:"Правила бренда соблюдены: бизнес Rich Mind — только Беларусь; без claim по compliance; без заявлений о руководстве людьми в настоящем времени."
+ },
+ en:{
+  h1:"Your story, out loud",
+  tagline:"Your story, out loud",
+  sub:"A pitch is a short conversation about yourself. Inside — a ready script in three lengths, plus exercises, tips and instructions to deliver it with confidence and sound premium.",
+  f1:"3 lengths", f2:"Exercises", f3:"Tips", f4:"Instructions",
+  p_eyebrow:"Three lengths · one story", p_h2:"The pitches",
+  p_lead:"Every version follows: Hook → Who I am → Proof → What I want → Close. Pick the length for the moment.",
+  p1_badge:"10 seconds · one line", p1_where:"Networking, introductions, “what do you do?”",
+  p1:"<p>I'm Tatsiana — a Product Owner and Project Manager who builds products with AI. I've run my own business with a <span class='hl'>team of 17</span>, and today I'm shipping three products of my own.</p>",
+  p2_badge:"30–60 seconds · elevator pitch", p2_where:"Interview, first client meeting, video intro",
+  p2:"<p>I'm Tatsiana Zhukavets. I build products the way a founder does — I own the vision, run the process, and put AI to work.</p><p>I started by building my own education business in Belarus: from zero to <span class='hl'>2,500 students</span>, eight programs and a <span class='hl'>team of 17</span> — and I carried it through COVID before handing it over cleanly.</p><p>Then I rebuilt everything after moving to Poland: 50-plus certifications, and straight into building three products of my own — an AI consultation platform, a live language academy of 360 lessons, and a family health app — with AI as my working team.</p><p>I'm looking for a place where product ownership, people, and AI leverage meet. Let's talk.</p>",
+  p3_badge:"2–3 minutes · full High Pitch", p3_where:"“Tell me about yourself” in an interview, deeper intro, a talk",
+  p3:"<p><em>(warm, unhurried)</em></p><p>Three years ago, I was learning Polish behind a coffee machine. Today I build three products with AI as my team. Let me connect those two points.</p><p>I'm Tatsiana. At heart I'm a founder and a project manager — I build products through people, process discipline, and AI tools.</p><p>My foundation is real business. In Belarus I built my own education center from zero: eight program verticals, a <span class='hl'>team of seventeen</span>, more than <span class='hl'>two and a half thousand students</span>, with 40–60% retention. I kept it alive through COVID and closed that chapter the right way — a structured handover to a partner when I emigrated.</p><p>Then Poland. I started over — new language, new market — and I retrained hard: 50-plus certifications, from the Google Project Management program to a stack of AI courses. And I went straight from learning into building.</p><p>Today I own three products, all heading to launch. An AI consultation platform, where I own the product and its multilingual content system. An online language academy — a full product cycle, 360 lessons, already live, built through an AI pipeline with three-stage quality control. And a family medicine-cabinet app, researched across three markets.</p><p>AI isn't a buzzword for me — it's my daily working environment. Claude Code and Codex every day, four custom plugins I built myself, prompt testing, red-team checks. The AI does the volume; the judgment stays mine.</p><p>What makes me different is the combination: a founder's instinct, a project manager's structure, and real AI fluency — held together with warmth for the people I work with.</p><p>I'm looking for [a product role where I can own outcomes / clients I can help tell their story]. If that's you — let's talk.</p>",
+  l_eyebrow:"No stress · 10 min a day for 3 days", l_h2:"How to learn it",
+  l_lead:"The one rule: don't memorize it whole. Learn it in blocks and rehearse out loud — that's how it becomes yours and you never lose your place.",
+  l1t:"Learn the 5 blocks", l1d:"Your pitch = Hook → Who I am → Proof → What I want → Close. Memorize the ORDER of the blocks, not the words — then you'll never get lost.",
+  l2t:"Read it aloud 3 times", l2d:"Not memorizing yet — just calmly out loud. Let the words settle and become yours.",
+  l3t:"One block at a time", l3d:"Nail the Hook first, so you can say it without looking. Then add the second block, then the third. Like a snowball.",
+  l4t:"Mirror · 3 run-throughs", l4d:"Look yourself in the eye. Smile on the first and last line — warmth is audible.",
+  l5t:"Record on your phone", l5d:"Film the first take and watch it back. Uncomfortable — but that's how the stiffness goes. 2–3 recordings and your voice sounds far more confident.",
+  l6t:"Timed run", l6d:"With a timer: 10s / 60s / 2–3 min. Hit the time calmly → you're ready.",
+  e_eyebrow:"2 minutes each · warm up", e_h2:"Drills",
+  e1m:"2 min", e1t:"10 hooks", e1d:"Say the first line 10 times with different intonation. Find yours — alive, not a news anchor.",
+  e2m:"2 min", e2t:"Pause drive", e2d:"Where a pause fits, silently count “one-two”. Pauses = confidence, not a blank.",
+  e3m:"1 min", e3t:"Numbers only", e3d:"Say just the numbers aloud: 2,500 · 17 · 360 · 50+. Slow and weighty — that's your strength.",
+  e4m:"1 min", e4t:"Smile start", e4d:"Begin with a light smile. Your voice warms instantly — and warmth is your brand.",
+  e5m:"3 min", e5t:"Live listener", e5d:"Tell a friend or family member, not the wall. A real person = a real rehearsal.",
+  e6m:"1 min", e6t:"Your “ask”", e6d:"Rehearse the last line for the situation (see table). Only that line changes.",
+  c_eyebrow:"One minute before it matters", c_h2:"Checklist",
+  c1:"I remember the 5 blocks in order", c2:"The hook is automatic", c3:"I know my “ask” for this situation", c4:"Breathing steady, no rush", c5:"Smile + eye contact at the start and the end",
+  x_eyebrow:"Only “What I want” changes", x_h2:"By context",
+  x_lead:"The whole pitch stays the same. Adjust only the closing ask.",
+  x_th1:"Situation", x_th2:"Closing ask",
+  x_r1a:"Interview", x_r1b:"“…I'm looking for a product role where I can own the outcome.”",
+  x_r2a:"Service client", x_r2b:"“…I help people and businesses tell their story so it actually sells. Let's talk.”",
+  x_r3a:"Networking", x_r3b:"“…great to meet you — if our interests overlap, let's stay in touch.”",
+  x_r4a:"Investor / partner", x_r4b:"“…I'm looking for partners to take these products to market.”",
+  note:"Brand rules respected: the Rich Mind business was Belarus-only; no compliance claims; no present-tense people-leading claims."
+ },
+ pl:{
+  h1:"Twoja opowieść o sobie",
+  tagline:"Opowieść o sobie — na głos",
+  sub:"Pitch to krótka rozmowa o sobie. W środku gotowy tekst w trzech długościach plus ćwiczenia, wskazówki i instrukcje, by mówić pewnie i brzmieć na milion.",
+  f1:"3 długości", f2:"Ćwiczenia", f3:"Wskazówki", f4:"Instrukcje",
+  p_eyebrow:"Trzy długości · jedna historia", p_h2:"Pitche",
+  p_lead:"Każda wersja: Haczyk → Kim jestem → Dowody → Czego chcę → Zamknięcie. Wybierz długość pod sytuację.",
+  p1_badge:"10 sekund · jedno zdanie", p1_where:"Networking, poznanie, „czym się zajmujesz?”",
+  p1:"<p>Jestem Tatsiana — Product Owner i Project Manager, buduję produkty z AI. Prowadziłam własny biznes z <span class='hl'>zespołem 17 osób</span>, a dziś tworzę trzy własne produkty.</p>",
+  p2_badge:"30–60 sekund · pitch windowy", p2_where:"Rozmowa, pierwsze spotkanie z klientem, wideo-intro",
+  p2:"<p>Jestem Tatsiana Zhukavets. Tworzę produkty jak founder — trzymam wizję, prowadzę proces i włączam AI do pracy.</p><p>Zaczynałam od własnego biznesu edukacyjnego na Białorusi: od zera do <span class='hl'>2 500 uczniów</span>, osiem kierunków i <span class='hl'>zespół 17 osób</span> — przeprowadziłam go przez COVID i przekazałam wspólnikowi bez strat.</p><p>Potem po przeprowadzce do Polski zbudowałam wszystko od nowa: 50+ certyfikatów — i od razu w tworzenie trzech produktów: platforma konsultacji AI, żywa akademia języków na 360 lekcji i aplikacja domowej apteczki, gdzie AI to mój zespół.</p><p>Szukam miejsca, gdzie spotykają się własność produktu, ludzie i dźwignia AI. Porozmawiajmy.</p>",
+  p3_badge:"2–3 minuty · pełny High Pitch", p3_where:"„Proszę opowiedzieć o sobie” na rozmowie, głębsze poznanie, prezentacja",
+  p3:"<p><em>(ciepło, bez pośpiechu)</em></p><p>Trzy lata temu uczyłam się polskiego za ekspresem do kawy. Dziś tworzę trzy produkty, gdzie AI jest moim zespołem. Połączę te dwa punkty.</p><p>Jestem Tatsiana. W gruncie rzeczy jestem founderką i project managerką — tworzę produkty przez ludzi, dyscyplinę procesów i narzędzia AI.</p><p>Mój fundament to realny biznes. Na Białorusi zbudowałam od zera własne centrum edukacyjne: osiem kierunków, <span class='hl'>zespół 17 osób</span>, ponad <span class='hl'>2 500 uczniów</span>, retencja 40–60%. Przeprowadziłam je przez COVID i zamknęłam ten rozdział właściwie — uporządkowanym przekazaniem wspólnikowi przy emigracji.</p><p>Potem Polska. Zaczęłam od nowa — nowy język, nowy rynek — i solidnie się przekwalifikowałam: 50+ certyfikatów, od Google Project Management po serię kursów AI. I z nauki od razu poszłam tworzyć.</p><p>Dziś mam trzy produkty, wszystkie zmierzają do startu. Platforma konsultacji AI, gdzie jestem właścicielką produktu i jego wielojęzycznego systemu treści. Internetowa akademia języków — pełny cykl, 360 lekcji, już działa, zbudowana przez pipeline AI z trzystopniową kontrolą jakości. I aplikacja domowej apteczki z badaniem na trzech rynkach.</p><p>AI to dla mnie nie modne słowo — to moje codzienne środowisko pracy. Claude Code i Codex codziennie, cztery własne wtyczki, testy promptów, kontrole red-team. AI bierze wolumen — decyzja zostaje przy mnie.</p><p>Wyróżnia mnie połączenie: instynkt founderki, struktura project managerki i prawdziwa swoboda w AI, spięte ciepłem do ludzi.</p><p>Szukam [roli produktowej, gdzie odpowiadam za wynik / klientów, którym pomogę opowiedzieć ich historię]. Jeśli to o Tobie — porozmawiajmy.</p>",
+  l_eyebrow:"Bez stresu · 10 minut dziennie przez 3 dni", l_h2:"Jak się nauczyć",
+  l_lead:"Główna zasada: nie wkuwaj całości. Ucz się kawałkami i ćwicz na głos — tak tekst staje się Twój i nigdy się nie zgubisz.",
+  l1t:"Poznaj 5 klocków", l1d:"Pitch = Haczyk → Kim jestem → Dowody → Czego chcę → Zamknięcie. Zapamiętaj kolejność klocków, nie słowa — wtedy nigdy się nie zgubisz.",
+  l2t:"Przeczytaj na głos 3 razy", l2d:"Jeszcze bez wkuwania — po prostu spokojnie na głos. Niech słowa się „ograją” i staną się Twoje.",
+  l3t:"Ucz się po jednym klocku", l3d:"Najpierw Haczyk — tak, by mówić bez patrzenia. Potem dodaj drugi, potem trzeci. Jak kula śniegowa.",
+  l4t:"Lustro · 3 przejścia", l4d:"Patrz sobie w oczy. Uśmiechnij się na pierwszym i ostatnim zdaniu — ciepło słychać w głosie.",
+  l5t:"Nagraj na telefon", l5d:"Pierwsze podejście nagraj na wideo i obejrzyj. Nieprzyjemne — ale właśnie tak znika sztywność. 2–3 nagrania i głos brzmi pewniej.",
+  l6t:"Przejście na czas", l6d:"Ze stoperem: 10 s / 60 s / 2–3 min. Spokojnie mieścisz się w czasie → gotowe.",
+  e_eyebrow:"Po 2 minuty · rozgrzewka", e_h2:"Ćwiczenia",
+  e1m:"2 min", e1t:"10 haczyków", e1d:"Powiedz pierwsze zdanie 10 razy z różną intonacją. Znajdź swoją — żywą, nie „lektorską”.",
+  e2m:"2 min", e2t:"Pauza-napęd", e2d:"Tam, gdzie pasuje pauza, licz w myślach „raz-dwa”. Pauzy = pewność, nie pustka.",
+  e3m:"1 min", e3t:"Tylko liczby", e3d:"Powiedz na głos same liczby: 2 500 · 17 · 360 · 50+. Wolno i z wagą — to Twoja siła.",
+  e4m:"1 min", e4t:"Uśmiech na start", e4d:"Zacznij od lekkiego uśmiechu. Głos od razu cieplejszy — a ciepło to Twoja marka.",
+  e5m:"3 min", e5t:"Żywy słuchacz", e5d:"Opowiedz koledze lub bliskiej osobie, nie ścianie. Żywy człowiek = prawdziwa próba.",
+  e6m:"1 min", e6t:"Twój „ask”", e6d:"Przećwicz ostatnie zdanie pod sytuację (patrz tabela). Zmienia się tylko ono.",
+  c_eyebrow:"Minutę przed ważną chwilą", c_h2:"Lista kontrolna",
+  c1:"Pamiętam 5 klocków po kolei", c2:"Haczyk mam w małym palcu", c3:"Znam swój „ask” pod tę sytuację", c4:"Oddycham spokojnie, bez pośpiechu", c5:"Uśmiech + kontakt wzrokowy na starcie i na końcu",
+  x_eyebrow:"Zmienia się tylko „Czego chcę”", x_h2:"Pod kontekst",
+  x_lead:"Cały pitch zostaje ten sam. Dostosuj tylko końcową prośbę.",
+  x_th1:"Sytuacja", x_th2:"Prośba na koniec",
+  x_r1a:"Rozmowa", x_r1b:"„…szukam roli produktowej, gdzie odpowiadam za wynik.”",
+  x_r2a:"Klient usługi", x_r2b:"„…pomagam ludziom i firmom opowiedzieć historię tak, by sprzedawała. Porozmawiajmy.”",
+  x_r3a:"Networking", x_r3b:"„…miło Cię poznać — jeśli mamy wspólne tematy, bądźmy w kontakcie.”",
+  x_r4a:"Inwestor / partner", x_r4b:"„…szukam partnerów, by dowieźć te produkty na rynek.”",
+  note:"Zasady marki zachowane: biznes Rich Mind był tylko na Białorusi; bez deklaracji compliance; bez twierdzeń o kierowaniu ludźmi w czasie teraźniejszym."
+ }
+};
+
+var lang='ru';
+function applyLang(l){
+  lang = T[l]?l:'ru';
+  document.documentElement.lang = lang;
+  var d = T[lang];
+  document.querySelectorAll('[data-i]').forEach(function(el){
+    var v = d[el.getAttribute('data-i')];
+    if(v!=null) el.innerHTML = v;
+  });
+  document.querySelectorAll('.langbtn').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-l')===lang); });
+  try{ localStorage.setItem('hp-lang', lang); }catch(e){}
+}
+document.querySelectorAll('.langbtn').forEach(function(b){ b.addEventListener('click', function(){ applyLang(b.getAttribute('data-l')); }); });
+
+var tb=document.getElementById('theme-btn');
+function theme(t){var dk=t==='dark';document.body.classList.toggle('dark',dk);
+  tb.textContent=dk?'☀':'🌙';tb.title=dk?'Светлая тема':'Тёмная тема';
+  try{localStorage.setItem('hp-theme',t)}catch(e){}}
+tb.addEventListener('click',function(){theme(document.body.classList.contains('dark')?'light':'dark')});
+
+var bar=document.getElementById('bar'), tt=document.getElementById('totop');
+window.addEventListener('scroll',function(){
+  var h=document.documentElement, sc=h.scrollTop/(h.scrollHeight-h.clientHeight)*100;
+  bar.style.width=sc+'%'; tt.classList.toggle('show',h.scrollTop>500);
+});
+tt.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'})});
+
+(function init(){
+  var th=null, lg=null;
+  try{ th=localStorage.getItem('hp-theme'); lg=localStorage.getItem('hp-lang'); }catch(e){}
+  theme(th==='dark'?'dark':'light');
+  applyLang(lg && T[lg] ? lg : 'ru');
+})();
+</script>
+
+<script>
+/* ✦ Static golden starry sky — drawn once, no animation (shows on dark theme only) */
+(function(){
+  var c = document.getElementById('starfield'); if(!c) return;
+  var ctx = c.getContext('2d');
+  var DPR = Math.min(window.devicePixelRatio || 1, 2), W = 0, H = 0;
+  function draw(){
+    W = window.innerWidth; H = window.innerHeight;
+    c.width = W*DPR; c.height = H*DPR; c.style.width = W+'px'; c.style.height = H+'px';
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+    ctx.clearRect(0,0,W,H);
+    var n = Math.round(W*H/2500);
+    for(var i=0;i<n;i++){
+      var x = Math.random()*W, y = Math.random()*H, t = Math.random();
+      var rad = t<0.80 ? Math.random()*0.7+0.35 : (t<0.96 ? Math.random()*0.6+0.9 : Math.random()*0.7+1.5);
+      var op  = t<0.80 ? Math.random()*0.30+0.12 : (t<0.96 ? Math.random()*0.30+0.38 : Math.random()*0.25+0.6);
+      ctx.beginPath(); ctx.arc(x, y, rad, 0, 6.2832);
+      ctx.fillStyle = (Math.random()<0.14) ? 'rgba(255,245,220,'+op+')' : 'rgba(244,200,108,'+op+')';
+      ctx.fill();
+    }
+  }
+  draw(); window.addEventListener('resize', draw);
+})();
+</script>
+</body>
+</html>
